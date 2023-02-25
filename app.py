@@ -30,13 +30,13 @@ layout4 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))
 
 layout5 = [[sg.Text('Pet question 2')],
            [sg.Text('How many times per day would you like your pet to be fed?')],
-           [sg.Input('', key = 'pet_one_dispenses_per_day', expand_x=True, justification='left')],
+           [sg.Input('', key = 'pet_two_dispenses_per_day', expand_x=True, justification='left')],
            [sg.Text('How much should each meal be (cups)?')],
-           [sg.Input('', key = 'pet_one_amount_dispensed', expand_x=True, justification='left')],
+           [sg.Input('', key = 'pet_two_amount_dispensed', expand_x=True, justification='left')],
            [sg.Text('How many increments should the food be dispensed?')],
-           [sg.Input('', key = 'pet_one_increments', expand_x=True, justification='left')],
+           [sg.Input('', key = 'pet_two_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
-           [sg.Input('', key = 'pet_one_time_between_increments', expand_x=True, justification='left')],
+           [sg.Input('', key = 'pet_two_time_between_increments', expand_x=True, justification='left')],
         [sg.Button('Back'), sg.Button('Exit')]]
 
 layout = [[sg.Column(phone_page, key='1'), sg.Column(layout1, visible=False, key='2'), sg.Column(layout2, visible=False, key='3'), sg.Column(layout3, visible=False, key='4'), sg.Column(layout4, visible=False, key='5'), sg.Column(layout5, visible=False, key='6')]]
