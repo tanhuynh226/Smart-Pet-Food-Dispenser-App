@@ -1,19 +1,26 @@
 import PySimpleGUI as sg
 
-layouts = {'Phone Number', 'Home', 'Dispense 1 Pet ID', 'Pet Q1', 'Dispense 2 Pet ID', 'Pet Q2'}
+def get_title_str(layout):
+    return layout[0][0].DisplayText
 
-phone_page = [[sg.Text('Enter your phone number (include country number):')],
+def get_last_layout_num(layout_order):
+    return len(layout_order) - 1
+
+phone_page = [[sg.Text('Enter your phone number', font = ('Arial Bold', 12)), sg.Text('(include country number):')],
               [sg.Input('', key = 'phone_number', enable_events = True, expand_x=True, justification='left')],
-            [sg.Button('Next'), sg.Button('Exit')]]
+            [sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout1 = [[sg.Text('Home page')], 
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit')]]
+calibration_page = [[sg.Text('Motion Detection Calibration', font = ('Arial Bold', 12))], 
+           [sg.Text('Please do not place anything in front of the device. Click the "Ready" button below after ensuring so.', justification = 'center')],
+           [sg.Button('Ready', key = 'calibration')],
+        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout2 = [[sg.Text('Dispenser 1 Pet Identification', font = ('Arial Bold', 12))], 
-           [sg.Text('Please place your first pet in front of the camera. Click the "Next" button below after ensuring so.', justification = 'center')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit')]]
+pet_id1 = [[sg.Text('Dispenser 1 Pet Identification', font = ('Arial Bold', 12))], 
+           [sg.Text('Please place your first pet in front of the camera. Click the "Ready" button below after ensuring so.', justification = 'center')],
+           [sg.Button('Ready', key = 'pet_id1')],
+        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout3 = [[sg.Text('Pet question 1')],
+pet_q1 = [[sg.Text('Input 1st Pet Info')],
            [sg.Text('How many times per day would you like your pet to be fed?')],
            [sg.Input('', key = 'pet_one_dispenses_per_day', expand_x=True, justification='left')],
            [sg.Text('How much should each meal be (cups)?')],
@@ -22,13 +29,14 @@ layout3 = [[sg.Text('Pet question 1')],
            [sg.Input('', key = 'pet_one_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_one_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit')]]
+        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout4 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))], 
+pet_id2 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))], 
            [sg.Text('Please place your second pet in front of the camera. Click the "Next" button below after ensuring so.', justification = 'center')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit')]]
+           [sg.Button('Ready', key = 'pet_id2')],
+        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout5 = [[sg.Text('Pet question 2')],
+pet_q2 = [[sg.Text('Input 2nd Pet Info')],
            [sg.Text('How many times per day would you like your pet to be fed?')],
            [sg.Input('', key = 'pet_two_dispenses_per_day', expand_x=True, justification='left')],
            [sg.Text('How much should each meal be (cups)?')],
@@ -37,22 +45,40 @@ layout5 = [[sg.Text('Pet question 2')],
            [sg.Input('', key = 'pet_two_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_two_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Exit')]]
+        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
 
-layout = [[sg.Column(phone_page, key='1'), sg.Column(layout1, visible=False, key='2'), sg.Column(layout2, visible=False, key='3'), sg.Column(layout3, visible=False, key='4'), sg.Column(layout4, visible=False, key='5'), sg.Column(layout5, visible=False, key='6')]]
+layout_order = [phone_page, calibration_page, pet_id1, pet_q1, pet_id2, pet_q2] # The page order that the initial setup takes
+
+home_page = [[sg.Text('Home page')], 
+        [sg.Button(get_title_str(layout)) for layout in layout_order]]
+
+layout_order.append(home_page)
+
+
+layout = [[sg.Column(layout, key=str(idx), visible=(idx==0)) for idx, layout in enumerate(layout_order)]]
 
 window = sg.Window('Swapping the contents of a window', layout)
 
-layout_num = 1 # The currently visible layout
+layout_num = 0 # The first layout in [layout_order] has key 0 and is visible
 while True:
     event, values = window.read()
     print(event, values)
-    if event == 'phone_number':
+    
+    if 'Exit' in event or event is None:
+        break
+    elif event == 'phone_number':
         if values['phone_number'][-1] not in ('0123456789'):
             sg.popup("Only digits allowed")
             window['phone_number'].update(values['phone_number'][:-1])
-    elif event in (None, 'Exit'):
-        break
+    elif event == 'calibration':
+        # TODO: wait for db update from backend
+        print("DO CALIBRATION")
+    elif event == 'pet_id1':
+        # TODO: wait for db update from backend
+        print("DO PET ID 1")
+    elif event == 'pet_id2':
+        # TODO: wait for db update from backend
+        print("DO PET ID 2")
     elif "Next" in event:
         window[f'{layout_num}'].update(visible=False)
         layout_num += 1
@@ -61,5 +87,16 @@ while True:
         window[f'{layout_num}'].update(visible=False)
         layout_num -= 1
         window[f'{layout_num }'].update(visible=True)
-        
+    elif "Home" in event:
+        window[f'{layout_num}'].update(visible=False)
+        layout_num = get_last_layout_num(layout_order)
+        window[f'{layout_num }'].update(visible=True)
+    elif layout_num == get_last_layout_num(layout_order):
+        # For the home page, find the page with the title corresponding with the button text
+        for idx, layout in enumerate(layout_order):
+            if get_title_str(layout) in event:
+                window[f'{layout_num}'].update(visible=False)
+                layout_num = idx
+                window[f'{layout_num }'].update(visible=True)
+
 window.close()
