@@ -8,17 +8,20 @@ def get_last_layout_num(layout_order):
 
 phone_page = [[sg.Text('Enter your phone number', font = ('Arial Bold', 12)), sg.Text('(include country number):')],
               [sg.Input('', key = 'phone_number', enable_events = True, expand_x=True, justification='left')],
-            [sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+            [sg.Button('Next')], 
+            [sg.Button('Exit'), sg.Button('Home')]]
 
 calibration_page = [[sg.Text('Motion Detection Calibration', font = ('Arial Bold', 12))], 
            [sg.Text('Please do not place anything in front of the device. Click the "Ready" button below after ensuring so.', justification = 'center')],
            [sg.Button('Ready', key = 'calibration')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Exit'), sg.Button('Home')]]
 
 pet_id1 = [[sg.Text('Dispenser 1 Pet Identification', font = ('Arial Bold', 12))], 
            [sg.Text('Please place your first pet in front of the camera. Click the "Ready" button below after ensuring so.', justification = 'center')],
            [sg.Button('Ready', key = 'pet_id1')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+        [sg.Button('Back'), sg.Button('Next')],
+         [sg.Button('Exit'), sg.Button('Home')]]
 
 pet_q1 = [[sg.Text('Input 1st Pet Info')],
            [sg.Text('How many times per day would you like your pet to be fed?')],
@@ -29,12 +32,14 @@ pet_q1 = [[sg.Text('Input 1st Pet Info')],
            [sg.Input('', key = 'pet_one_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_one_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Exit'), sg.Button('Home')]]
 
 pet_id2 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))], 
            [sg.Text('Please place your second pet in front of the camera. Click the "Next" button below after ensuring so.', justification = 'center')],
            [sg.Button('Ready', key = 'pet_id2')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Exit'), sg.Button('Home')]]
 
 pet_q2 = [[sg.Text('Input 2nd Pet Info')],
            [sg.Text('How many times per day would you like your pet to be fed?')],
@@ -45,7 +50,8 @@ pet_q2 = [[sg.Text('Input 2nd Pet Info')],
            [sg.Input('', key = 'pet_two_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_two_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Next'), sg.Button('Exit'), sg.Button('Home')]]
+        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Exit'), sg.Button('Home')]]
 
 layout_order = [phone_page, calibration_page, pet_id1, pet_q1, pet_id2, pet_q2] # The page order that the initial setup takes
 
