@@ -55,8 +55,7 @@ pet_q2 = [[sg.Text('Input 2nd Pet Info')],
 
 layout_order = [phone_page, calibration_page, pet_id1, pet_q1, pet_id2, pet_q2] # The page order that the initial setup takes
 
-home_page = [[sg.Text('Home page')], 
-        [sg.Button(get_title_str(layout)) for layout in layout_order]]
+home_page = [[sg.Text('Home page')]] + [[sg.Button(get_title_str(layout))] for layout in layout_order] + [[sg.Button('Exit')]]
 
 layout_order.append(home_page)
 
@@ -73,7 +72,7 @@ while True:
     if 'Exit' in event or event is None:
         break
     elif event == 'phone_number':
-        if values['phone_number'][-1] not in ('0123456789'):
+        if values['phone_number'] and values['phone_number'][-1] not in ('0123456789'):
             sg.popup("Only digits allowed")
             window['phone_number'].update(values['phone_number'][:-1])
     elif event == 'calibration':
