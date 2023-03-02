@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import pymysql
 
 def get_title_str(layout):
     return layout[0][0].DisplayText
@@ -6,7 +7,10 @@ def get_title_str(layout):
 def get_last_layout_num(layout_order):
     return len(layout_order) - 1
 
-phone_page = [[sg.Text('Enter your phone number', font = ('Arial Bold', 12)), sg.Text('(include country number):')],
+def sql_calls():
+    return 
+
+phone_page = [[sg.Text('Enter your phone number (include country number):', font = ('Arial Bold', 12))],
               [sg.Input('', key = 'phone_number', enable_events = True, expand_x=True, justification='left')],
             [sg.Button('Next')], 
             [sg.Button('Exit'), sg.Button('Home')]]
@@ -55,7 +59,8 @@ pet_q2 = [[sg.Text('Input 2nd Pet Info')],
 
 layout_order = [phone_page, calibration_page, pet_id1, pet_q1, pet_id2, pet_q2] # The page order that the initial setup takes
 
-home_page = [[sg.Text('Home page')]] + [[sg.Button(get_title_str(layout))] for layout in layout_order] + [[sg.Button('Exit')]]
+home_button_order = ['Edit Phone Number', 'Recalibrate Motion Sensor', 'Recalibrate Dispenser 1 Pet ID', 'Edit Dispenser 1 Attributes', 'Recalibrate Dispenser 2 Pet ID', 'Edit Dispenser 2 Attributes']
+home_page = [[sg.Text('Home page')]] + [[sg.Button(str(button_name))] for button_name in home_button_order] + [[sg.Button('Exit')]]
 
 layout_order.append(home_page)
 
@@ -98,8 +103,8 @@ while True:
         window[f'{layout_num }'].update(visible=True)
     elif layout_num == get_last_layout_num(layout_order):
         # For the home page, find the page with the title corresponding with the button text
-        for idx, layout in enumerate(layout_order):
-            if get_title_str(layout) in event:
+        for idx, button_name in enumerate(home_button_order):
+            if button_name in event:
                 window[f'{layout_num}'].update(visible=False)
                 layout_num = idx
                 window[f'{layout_num }'].update(visible=True)
