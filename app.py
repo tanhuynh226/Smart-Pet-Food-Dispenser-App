@@ -1,18 +1,61 @@
 import PySimpleGUI as sg
 import pymysql
+import os
+from dotenv import load_dotenv
 
+pet1_breed = 'Blank'
+pet2_breed = 'Blank'
+load_dotenv()
+
+#sql functions 
+def sql_phone(cur):
+    sql = "SELECT phone_number FROM Gen;"
+    cur.execute(sql)
+    sql = "UPDATE phone_number FROM Gen;"
+    cur.execute(sql, [values['phone_number']])
+
+def sql_motion_calibration(cur):
+    sql = "UPDATE calibrate_distance FROM Gen;"
+    cur.execute(sql)
+    sql = "UPDATE Gen SET calibrate_distance = true WHERE calibrate_distance = false;"
+    cur.execute(sql)
+
+def sql_pet1_id(cur):
+    sql = "SELECT detect_pet FROM Dispenser1;"
+    cur.execute(sql)
+    sql = "UPDATE Dispenser1 SET detect_pet = true WHERE detect_pet = false;"
+    cur.execute(sql)
+
+def sql_pet1_info(cur):
+    sql = "SELECT dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser1;"
+    cur.execute(sql)
+    sql = "UPDATE dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser1;"
+    cur.execute(sql, [values['pet_one_dispenses_per_day'], values['pet_one_amount_dispensed'], values['pet_one_increments'], values['pet_one_time_between_increments']])
+    
+
+def sql_pet2_id(cur):
+    sql = "SELECT detect_pet FROM Dispenser2;"
+    cur.execute(sql)
+    sql = "UPDATE Dispenser2 SET detect_pet = true WHERE detect_pet = false;"
+    cur.execute(sql) 
+
+def sql_pet2_info(cur):
+    sql = "SELECT dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser2;"
+    cur.execute(sql)
+    sql = "UPDATE dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser2;"
+    cur.execute(sql, [values['pet_two_dispenses_per_day'], values['pet_two_amount_dispensed'], values['pet_two_increments'], values['pet_two_time_between_increments']])
+
+
+#functions needed for desktop window layout
 def get_title_str(layout):
     return layout[0][0].DisplayText
 
 def get_last_layout_num(layout_order):
     return len(layout_order) - 1
 
-def sql_calls():
-    return 
-
 phone_page = [[sg.Text('Enter your phone number (include country number):', font = ('Arial Bold', 12))],
               [sg.Input('', key = 'phone_number', enable_events = True, expand_x=True, justification='left')],
-            [sg.Button('Next')], 
+            [sg.Button('Next', key = 'phone_edit')], 
             [sg.Button('Exit'), sg.Button('Home')]]
 
 calibration_page = [[sg.Text('Motion Detection Calibration', font = ('Arial Bold', 12))], 
@@ -27,7 +70,7 @@ pet_id1 = [[sg.Text('Dispenser 1 Pet Identification', font = ('Arial Bold', 12))
         [sg.Button('Back'), sg.Button('Next')],
          [sg.Button('Exit'), sg.Button('Home')]]
 
-pet_q1 = [[sg.Text('Input 1st Pet Info')],
+pet_q1 = [[sg.Text('Input 1st Pet Info', font = ('Arial Bold', 12))],
            [sg.Text('How many times per day would you like your pet to be fed?')],
            [sg.Input('', key = 'pet_one_dispenses_per_day', expand_x=True, justification='left')],
            [sg.Text('How much should each meal be (cups)?')],
@@ -36,7 +79,7 @@ pet_q1 = [[sg.Text('Input 1st Pet Info')],
            [sg.Input('', key = 'pet_one_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_one_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Back'), sg.Button('Next', key = 'pet1_info')], 
         [sg.Button('Exit'), sg.Button('Home')]]
 
 pet_id2 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))], 
@@ -45,7 +88,7 @@ pet_id2 = [[sg.Text('Dispenser 2 Pet Identification', font = ('Arial Bold', 12))
         [sg.Button('Back'), sg.Button('Next')], 
         [sg.Button('Exit'), sg.Button('Home')]]
 
-pet_q2 = [[sg.Text('Input 2nd Pet Info')],
+pet_q2 = [[sg.Text('Input 2nd Pet Info', font = ('Arial Bold', 12))],
            [sg.Text('How many times per day would you like your pet to be fed?')],
            [sg.Input('', key = 'pet_two_dispenses_per_day', expand_x=True, justification='left')],
            [sg.Text('How much should each meal be (cups)?')],
@@ -54,13 +97,15 @@ pet_q2 = [[sg.Text('Input 2nd Pet Info')],
            [sg.Input('', key = 'pet_two_increments', expand_x=True, justification='left')],
            [sg.Text('How many seconds in between each increment (seconds)?')],
            [sg.Input('', key = 'pet_two_time_between_increments', expand_x=True, justification='left')],
-        [sg.Button('Back'), sg.Button('Next')], 
+        [sg.Button('Back'), sg.Button('Next', key = 'pet2_info')], 
         [sg.Button('Exit'), sg.Button('Home')]]
 
 layout_order = [phone_page, calibration_page, pet_id1, pet_q1, pet_id2, pet_q2] # The page order that the initial setup takes
 
 home_button_order = ['Edit Phone Number', 'Recalibrate Motion Sensor', 'Recalibrate Dispenser 1 Pet ID', 'Edit Dispenser 1 Attributes', 'Recalibrate Dispenser 2 Pet ID', 'Edit Dispenser 2 Attributes']
-home_page = [[sg.Text('Home page')]] + [[sg.Button(str(button_name))] for button_name in home_button_order] + [[sg.Button('Exit')]]
+home_dispenser_label_1 = [[sg.Text('Dispenser 1 Pet')]] + [[sg.Text(pet1_breed)]]
+home_dispenser_label_2 = [[sg.Text('Dispenser 2 Pet')]] + [[sg.Text(pet2_breed)]]
+home_page = [[sg.Text('Home page', font = ('Arial Bold', 12))]] + [[sg.Column(home_dispenser_label_1), sg.Column(home_dispenser_label_2)]] + [[sg.Button(str(button_name))] for button_name in home_button_order] + [[sg.Button('Exit')]]
 
 layout_order.append(home_page)
 
@@ -70,9 +115,16 @@ layout = [[sg.Column(layout, key=str(idx), visible=(idx==0)) for idx, layout in 
 window = sg.Window('Swapping the contents of a window', layout)
 
 layout_num = 0 # The first layout in [layout_order] has key 0 and is visible
+input_key_list = [key for key, value in window.key_dict.items()
+    if isinstance(value, sg.Input)]
 while True:
     event, values = window.read()
-    print(event, values)
+    db = pymysql.connect(host=os.environ['AWS_RDS_ENDPOINT'],
+                            user=os.environ['AWS_RDS_USERNAME'],
+                            passwd=os.environ['AWS_RDS_PASSWORD'],
+                            db='dispenser')
+    cur = db.cursor()
+    #print(values)
     
     if 'Exit' in event or event is None:
         break
@@ -80,15 +132,46 @@ while True:
         if values['phone_number'] and values['phone_number'][-1] not in ('0123456789'):
             sg.popup("Only digits allowed")
             window['phone_number'].update(values['phone_number'][:-1])
+
+    elif event == 'phone_edit':
+        # TODO: wait for db update from backend
+        sql_phone(cur)
+
+        window[f'{layout_num}'].update(visible=False)
+        layout_num += 1
+        window[f'{layout_num }'].update(visible=True)
+        print("Phone added")
+
+  ###the READY buttons don't need to go to the next page, they just need to send data to the backend
     elif event == 'calibration':
         # TODO: wait for db update from backend
+        sql_motion_calibration(cur)
+
         print("DO CALIBRATION")
+
     elif event == 'pet_id1':
         # TODO: wait for db update from backend
         print("DO PET ID 1")
+
     elif event == 'pet_id2':
         # TODO: wait for db update from backend
         print("DO PET ID 2")
+
+  ###whenever the user pressed 'Next', it is considered a submit button and should update the user inputs into the backend
+    elif event == 'pet1_info':
+        # TODO: wait for db update from backend
+        window[f'{layout_num}'].update(visible=False)
+        layout_num += 1
+        window[f'{layout_num }'].update(visible=True)
+        print("DO PET ID 2")
+
+    elif event == 'pet2_info':
+        # TODO: wait for db update from backend
+        window[f'{layout_num}'].update(visible=False)
+        layout_num += 1
+        window[f'{layout_num }'].update(visible=True)
+        print("DO PET ID 2")
+
     elif "Next" in event:
         window[f'{layout_num}'].update(visible=False)
         layout_num += 1
@@ -110,3 +193,4 @@ while True:
                 window[f'{layout_num }'].update(visible=True)
 
 window.close()
+
