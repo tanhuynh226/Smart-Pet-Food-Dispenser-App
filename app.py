@@ -11,8 +11,6 @@ def sql_phone(cur, phone_number):
     cur.execute(sql)
 
 def sql_motion_calibration(cur):
-    sql = "UPDATE calibrate_distance FROM Gen;"
-    cur.execute(sql)
     sql = "UPDATE Gen SET calibrate_distance = true WHERE calibrate_distance = false;"
     cur.execute(sql)
 
@@ -20,18 +18,18 @@ def sql_pet1_id(cur):
     sql = "UPDATE Dispenser1 SET detect_pet = true WHERE detect_pet = false;"
     cur.execute(sql)
 
-def sql_pet1_info(cur):
-    sql = "UPDATE dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser1;"
-    cur.execute(sql, [values['pet_one_dispenses_per_day'], values['pet_one_amount_dispensed'], values['pet_one_increments'], values['pet_one_time_between_increments']])
+def sql_pet1_info(cur, pet_one_dispenses_per_day, pet_one_amount_dispensed, pet_one_increments, pet_one_time_between_increments):
+    sql = "UPDATE Dispenser1 SET dispenses_per_day = " +  pet_one_dispenses_per_day + ", amount_dispensed = " + pet_one_amount_dispensed + ", increments = " + pet_one_increments + ", time_between_increments = " + pet_one_time_between_increments +  ";"
+    cur.execute(sql)
     
 
 def sql_pet2_id(cur):
     sql = "UPDATE Dispenser2 SET detect_pet = true WHERE detect_pet = false;"
     cur.execute(sql) 
 
-def sql_pet2_info(cur):
-    sql = "UPDATE dispenses_per_day, amount_dispensed, increments, time_between_increments FROM Dispenser2;"
-    cur.execute(sql, [values['pet_two_dispenses_per_day'], values['pet_two_amount_dispensed'], values['pet_two_increments'], values['pet_two_time_between_increments']])
+def sql_pet2_info(cur, pet_two_dispenses_per_day, pet_two_amount_dispensed, pet_two_increments, pet_two_time_between_increments):
+    sql = "UPDATE Dispenser2 SET dispenses_per_day = " +  pet_two_dispenses_per_day + ", amount_dispensed = " + pet_two_amount_dispensed + ", increments = " + pet_two_increments + ", time_between_increments = " + pet_two_time_between_increments +  ";"
+    cur.execute(sql)
 
 pet1_breed = 'Blank'
 pet2_breed = 'Blank'
@@ -149,31 +147,34 @@ if __name__ == '__main__':
         elif event == 'calibration':
             # TODO: wait for db update from backend
             sql_motion_calibration(cur)
-
             print("DO CALIBRATION")
 
         elif event == 'pet_id1':
             # TODO: wait for db update from backend
+            sql_pet1_id(cur)
             print("DO PET ID 1")
 
         elif event == 'pet_id2':
             # TODO: wait for db update from backend
+            sql_pet2_id(cur)
             print("DO PET ID 2")
 
     ###whenever the user pressed 'Next', it is considered a submit button and should update the user inputs into the backend
         elif event == 'pet1_info':
             # TODO: wait for db update from backend
+            sql_pet1_info(cur, values['pet_one_dispenses_per_day'], values['pet_one_amount_dispensed'], values['pet_one_increments'], values['pet_one_time_between_increments'])
             window[f'{layout_num}'].update(visible=False)
             layout_num += 1
             window[f'{layout_num }'].update(visible=True)
-            print("DO PET ID 2")
+            print("EDITED PET 1 INFO")
 
         elif event == 'pet2_info':
             # TODO: wait for db update from backend
+            sql_pet2_info(cur, values['pet_two_dispenses_per_day'], values['pet_two_amount_dispensed'], values['pet_two_increments'], values['pet_two_time_between_increments'])
             window[f'{layout_num}'].update(visible=False)
             layout_num += 1
             window[f'{layout_num }'].update(visible=True)
-            print("DO PET ID 2")
+            print("EDITED PET 2 INFO")
 
         elif "Next" in event:
             window[f'{layout_num}'].update(visible=False)
